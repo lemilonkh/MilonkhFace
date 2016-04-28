@@ -1,0 +1,23 @@
+#ifndef SETTINGS_H
+#define SETTINGS_H
+
+#define TEXT_COLOR GColorGreen
+
+#define HEADER_BOUNDS GRect(0, 10, 144, 30)
+#define HEADER_TEXT "L3 M1l0nkh"
+
+#define TIME_FONT RESOURCE_ID_FONT_PERFECT_DOS_48
+#define TIME_X 2
+#define TIME_Y_NORMAL 52
+#define TIME_Y_ROUND 58
+#define TIME_HEIGHT 50
+
+#define DATE_FONT RESOURCE_ID_FONT_PERFECT_DOS_20
+#define DATE_BOUNDS GRect(0, 120, 144, 30)
+
+#define BATTERY_BOUNDS GRect(14, 35, 115, 12)
+#define BATTERY_CORNERS GCornersAll
+#define BATTERY_COLOR GColorGreen
+#define BATTERY_BACKGROUND_COLOR GColorBlack
+
+#endif
