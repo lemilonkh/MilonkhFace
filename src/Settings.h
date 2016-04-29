@@ -16,7 +16,7 @@
 #define DATE_BOUNDS GRect(0, 120, 144, 30)
 
 #define BATTERY_BOUNDS GRect(14, 35, 115, 12)
-#define BATTERY_CORNERS GCornersAll
+#define BATTERY_CORNERS GCornerNone
 #define BATTERY_COLOR GColorGreen
 #define BATTERY_BACKGROUND_COLOR GColorBlack
 
