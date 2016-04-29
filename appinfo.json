@@ -12,22 +12,22 @@
     "resources": {
         "media": [
             {
+                "file": "fonts/UbuntuMono.ttf",
+                "name": "FONT_UBUNTU_MONO_20",
+                "targetPlatforms": null,
+                "type": "font"
+            },
+            {
+                "file": "fonts/UbuntuMono.ttf",
+                "name": "FONT_UBUNTU_MONO_48",
+                "targetPlatforms": null,
+                "type": "font"
+            },
+            {
                 "file": "images/background.png",
                 "name": "IMAGE_BACKGROUND",
                 "targetPlatforms": null,
                 "type": "bitmap"
-            },
-            {
-                "compatibility": "2.7",
-                "file": "fonts/perfect-dos-vga.ttf",
-                "name": "FONT_PERFECT_DOS_20",
-                "type": "font"
-            },
-            {
-                "compatibility": "2.7",
-                "file": "fonts/perfect-dos-vga.ttf",
-                "name": "FONT_PERFECT_DOS_48",
-                "type": "font"
             }
         ]
     },
