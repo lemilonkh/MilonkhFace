@@ -73,10 +73,10 @@ static void load_main_window(Window *window) {
 	GRect bounds = layer_get_bounds(window_layer);
 
 	// create and draw background
-	background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND);
+	/*background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND);
 	background_layer = bitmap_layer_create(bounds);
 	bitmap_layer_set_bitmap(background_layer, background_bitmap);
-	layer_add_child(window_layer, bitmap_layer_get_layer(background_layer));
+	layer_add_child(window_layer, bitmap_layer_get_layer(background_layer));*/
 
 	// get fonts
 	time_font = fonts_load_custom_font(resource_get_handle(TIME_FONT));
