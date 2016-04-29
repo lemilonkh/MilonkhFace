@@ -7,7 +7,7 @@
 #define HEADER_TEXT "L3 M1l0nkh"
 
 #define TIME_FONT RESOURCE_ID_FONT_UBUNTU_MONO_48
-#define TIME_X 2
+#define TIME_X 0
 #define TIME_Y_NORMAL 52
 #define TIME_Y_ROUND 58
 #define TIME_HEIGHT 50

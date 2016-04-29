@@ -2,8 +2,6 @@
 #include "MilonkhFace.h"
 #include "Settings.h"
 
-#define RANDOM_COLOR() GColorFromRGB(rand()%256, rand()%256, rand()%256)
-
 static Window *main_window;
 static TextLayer *time_layer, *date_layer, *header_layer;
 static Layer *battery_layer;
@@ -43,10 +41,14 @@ static void finish() {
 
 static void update_colors() {
 	// generate some random backgrounds and contrasting text colors
-	GColor time_background_color = RANDOM_COLOR();
+	unsigned int r = rand()%256, g = rand()%256, b = rand()%256;
+	GColor time_background_color = GColorFromRGB(r, g, b);
+	//GColor time_color = inverted_color(r, g, b);
 	GColor time_color = gcolor_legible_over(time_background_color);
 	
-	default_background_color = RANDOM_COLOR();
+	r = rand()%256, g = rand()%256, b = rand()%256;
+	default_background_color = GColorFromRGB(r, g, b);
+	//default_color = inverted_color(r, g, b);
 	default_color = gcolor_legible_over(default_background_color);
 	
 	// update main and time layer background color
@@ -60,6 +62,10 @@ static void update_colors() {
 	
 	// redraw battery to update its colors
 	battery_callback(battery_state_service_peek());
+}
+
+static GColor inverted_color(unsigned int r, unsigned int g, unsigned int b) {
+	return GColorFromRGB(255-r, 255-g, 255-b);
 }
 
 static void update_time() {
