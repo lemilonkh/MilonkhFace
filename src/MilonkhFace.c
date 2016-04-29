@@ -2,6 +2,8 @@
 #include "MilonkhFace.h"
 #include "Settings.h"
 
+#define RANDOM_COLOR() GColorFromRGB(rand()%256, rand()%256, rand()%256)
+
 static Window *main_window;
 static TextLayer *time_layer, *date_layer, *header_layer;
 static Layer *battery_layer;
@@ -10,6 +12,8 @@ static BitmapLayer *background_layer;
 static GBitmap *background_bitmap;
 
 static int battery_level = 0;
+
+static GColor default_background_color, default_color;
 
 static void init() {
 	main_window = window_create();
@@ -28,13 +32,39 @@ static void init() {
 
 	// register for time updates
 	tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+	
+	// init random number generator
+	srand(time(NULL));
 }
 
 static void finish() {
 	window_destroy(main_window);
 }
 
+static void update_colors() {
+	// generate some random backgrounds and contrasting text colors
+	GColor time_background_color = RANDOM_COLOR();
+	GColor time_color = gcolor_legible_over(time_background_color);
+	
+	default_background_color = RANDOM_COLOR();
+	default_color = gcolor_legible_over(default_background_color);
+	
+	// update main and time layer background color
+	window_set_background_color(main_window, default_background_color);
+	text_layer_set_background_color(time_layer, time_background_color);
+	
+	// update all text layer's colors
+	text_layer_set_text_color(time_layer, time_color);
+	text_layer_set_text_color(header_layer, default_color);
+	text_layer_set_text_color(date_layer, default_color);
+	
+	// redraw battery to update its colors
+	battery_callback(battery_state_service_peek());
+}
+
 static void update_time() {
+	update_colors();
+	
 	// get the time
 	time_t temp = time(NULL);
 	struct tm *tick_time = localtime(&temp);
@@ -59,11 +89,11 @@ static void update_battery(Layer *layer, GContext *ctx) {
 	int width = (int)(float)(((float)battery_level / 100.0f) * 114.0f);
 
 	// draw background
-	graphics_context_set_fill_color(ctx, BATTERY_BACKGROUND_COLOR);
+	graphics_context_set_fill_color(ctx, default_background_color);
 	graphics_fill_rect(ctx, bounds, 0, BATTERY_CORNERS);
 
 	// draw bar
-	graphics_context_set_fill_color(ctx, BATTERY_COLOR);
+	graphics_context_set_fill_color(ctx, default_color);
 	graphics_fill_rect(ctx, GRect(0, 0, width, bounds.size.h), 0, BATTERY_CORNERS);
 }
 
@@ -109,7 +139,10 @@ static void load_main_window(Window *window) {
 	// create and layout battery layer
 	battery_layer = layer_create(BATTERY_BOUNDS);
 	layer_set_update_proc(battery_layer, update_battery);
-	battery_callback(battery_state_service_peek());
+	//battery_callback(battery_state_service_peek());
+	
+	// random colors for everybody
+	update_colors();
 	
 	// add date, time and battery layers to window's root layer
 	layer_add_child(window_layer, text_layer_get_layer(header_layer));
