@@ -13,6 +13,8 @@ static int battery_level = 0;
 
 static GColor default_background_color, default_color;
 
+static char symbols[] = {'/','$','#','^','?','=','!'};
+
 static void init() {
 	main_window = window_create();
 
@@ -77,7 +79,13 @@ static void update_time() {
 
 	// write time into string
 	static char time_buffer[8];
-	strftime(time_buffer, sizeof(time_buffer), clock_is_24h_style() ? "%H:%M" : "%I:%M", tick_time);
+	static char time_placeholder[5] = "%H,%M"; //clock_is_24h_style() ? "%H/%M" : "%I/%M";
+	
+	// get random symbol
+	char symbol = symbols[rand() % ARRAY_LENGTH(symbols)];
+	time_placeholder[2] = symbol;
+	
+	strftime(time_buffer, sizeof(time_buffer), time_placeholder, tick_time);
 	
 	// write date into string
 	static char date_buffer[16];
@@ -131,7 +139,7 @@ static void load_main_window(Window *window) {
 		GRect(TIME_X, PBL_IF_ROUND_ELSE(TIME_Y_ROUND, TIME_Y_NORMAL), bounds.size.w, TIME_HEIGHT));
 	text_layer_set_background_color(time_layer, GColorClear);
 	text_layer_set_text_color(time_layer, TEXT_COLOR);
-	text_layer_set_text(time_layer, "13:37");
+	text_layer_set_text(time_layer, "13//37");
 	text_layer_set_font(time_layer, time_font);
 	text_layer_set_text_alignment(time_layer, GTextAlignmentCenter);
 	
