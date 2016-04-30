@@ -1,6 +1,7 @@
 #include <pebble.h>
 #include "MilonkhFace.h"
 #include "Settings.h"
+#include "Colors.h"
 
 static Window *main_window;
 static TextLayer *time_layer, *date_layer, *header_layer;
@@ -10,10 +11,9 @@ static BitmapLayer *background_layer;
 static GBitmap *background_bitmap;
 
 static int battery_level = 0;
+static GColor battery_background_color, battery_color;
 
-static GColor default_background_color, default_color;
-
-static char symbols[] = {'/','$','#','^','?','=','!'};
+static char symbols[] = {',','_',':','-','*','/','$','~',';','#','+','^','?','=','!'};
 
 static void init() {
 	main_window = window_create();
@@ -42,32 +42,24 @@ static void finish() {
 }
 
 static void update_colors() {
-	// generate some random backgrounds and contrasting text colors
-	unsigned int r = rand()%256, g = rand()%256, b = rand()%256;
-	GColor time_background_color = GColorFromRGB(r, g, b);
-	//GColor time_color = inverted_color(r, g, b);
-	GColor time_color = gcolor_legible_over(time_background_color);
-	
-	r = rand()%256, g = rand()%256, b = rand()%256;
-	default_background_color = GColorFromRGB(r, g, b);
-	//default_color = inverted_color(r, g, b);
-	default_color = gcolor_legible_over(default_background_color);
+	int color_set = rand() % ARRAY_LENGTH(colors);
+	GColor background_color = GColorFromHEX(colors[color_set].background);
+	GColor text_color = GColorFromHEX(colors[color_set].text);
+	GColor detail_color = GColorFromHEX(colors[color_set].detail);
 	
 	// update main and time layer background color
-	window_set_background_color(main_window, default_background_color);
-	text_layer_set_background_color(time_layer, time_background_color);
+	window_set_background_color(main_window, background_color);
+	//text_layer_set_background_color(time_layer, time_background_color);
 	
 	// update all text layer's colors
-	text_layer_set_text_color(time_layer, time_color);
-	text_layer_set_text_color(header_layer, default_color);
-	text_layer_set_text_color(date_layer, default_color);
+	text_layer_set_text_color(time_layer, detail_color);
+	text_layer_set_text_color(header_layer, detail_color);
+	text_layer_set_text_color(date_layer, text_color);
 	
 	// redraw battery to update its colors
+	battery_background_color = detail_color;
+	battery_color = text_color;
 	battery_callback(battery_state_service_peek());
-}
-
-static GColor inverted_color(unsigned int r, unsigned int g, unsigned int b) {
-	return GColorFromRGB(255-r, 255-g, 255-b);
 }
 
 static void update_time() {
@@ -79,7 +71,11 @@ static void update_time() {
 
 	// write time into string
 	static char time_buffer[8];
-	static char time_placeholder[5] = "%H,%M"; //clock_is_24h_style() ? "%H/%M" : "%I/%M";
+	static char* time_placeholder;
+	if(clock_is_24h_style())
+		time_placeholder = "%H,%M";
+	else
+		time_placeholder = "%I,%M";
 	
 	// get random symbol
 	char symbol = symbols[rand() % ARRAY_LENGTH(symbols)];
@@ -103,11 +99,11 @@ static void update_battery(Layer *layer, GContext *ctx) {
 	int width = (int)(float)(((float)battery_level / 100.0f) * 114.0f);
 
 	// draw background
-	graphics_context_set_fill_color(ctx, default_background_color);
+	graphics_context_set_fill_color(ctx, battery_background_color);
 	graphics_fill_rect(ctx, bounds, 0, BATTERY_CORNERS);
 
 	// draw bar
-	graphics_context_set_fill_color(ctx, default_color);
+	graphics_context_set_fill_color(ctx, battery_color);
 	graphics_fill_rect(ctx, GRect(0, 0, width, bounds.size.h), 0, BATTERY_CORNERS);
 }
 
