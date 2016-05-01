@@ -11,3 +11,4 @@ Some screenshots:
 ![](screenshots/3.png?raw=true)
 ![](screenshots/4.png?raw=true)<br>
 ![](screenshots/5.png?raw=true)
+![](screenshots/6.png?raw=true)
