@@ -14,6 +14,7 @@ static int battery_level = 0;
 static GColor battery_background_color, battery_color;
 
 static char symbols[] = {',','_',':','-','*','/','$','~',';','#','+','^','?','=','!'};
+#define RANDOM_SYMBOL() (symbols[rand() % ARRAY_LENGTH(symbols)])
 
 static void init() {
 	main_window = window_create();
@@ -42,10 +43,16 @@ static void finish() {
 }
 
 static void update_colors() {
-	int color_set = rand() % ARRAY_LENGTH(colors);
+	/*int color_set = rand() % ARRAY_LENGTH(colors);
 	GColor background_color = GColorFromHEX(colors[color_set].background);
 	GColor text_color = GColorFromHEX(colors[color_set].text);
-	GColor detail_color = GColorFromHEX(colors[color_set].detail);
+	GColor detail_color = GColorFromHEX(colors[color_set].detail);*/
+	
+	bool lightOnDark = rand()%2 == 0;
+	
+	GColor background_color = random_color(!lightOnDark);
+	GColor text_color = random_color(lightOnDark);
+	GColor detail_color = random_color(lightOnDark);
 	
 	// update main and time layer background color
 	window_set_background_color(main_window, background_color);
@@ -60,6 +67,37 @@ static void update_colors() {
 	battery_background_color = detail_color;
 	battery_color = text_color;
 	battery_callback(battery_state_service_peek());
+}
+
+static GColor random_color(bool light) {
+	int color[3];
+	
+	if(light) {
+		color[0] = random_hex_val();
+		color[1] = random_hex_val();
+		color[2] = random_hex_val();
+	} else {
+		//bool veryDark = rand()%2 == 0;
+		bool veryDark = true;
+		
+		if(veryDark) {
+			int index = rand()%3;
+			color[index] = random_hex_val();
+		} else {
+			int index1 = rand()%3;
+			int index2 = rand()%3;
+			color[index1] = random_hex_val();
+			color[index2] = random_hex_val();
+		}
+	}
+	
+	return GColorFromRGB(color[0], color[1], color[2]);
+}
+
+// generates one of the following values: 0x55, 0xAA, 0xFF
+static int random_hex_val() {
+	int val = ((rand() % 3)+1) * 5;
+	return 16*val + val;
 }
 
 static void update_time() {
@@ -78,14 +116,19 @@ static void update_time() {
 		time_placeholder = "%I,%M";
 	
 	// get random symbol
-	char symbol = symbols[rand() % ARRAY_LENGTH(symbols)];
+	char symbol = RANDOM_SYMBOL();
 	time_placeholder[2] = symbol;
 	
 	strftime(time_buffer, sizeof(time_buffer), time_placeholder, tick_time);
 	
 	// write date into string
-	static char date_buffer[16];
-	strftime(date_buffer, sizeof(date_buffer), "%d %b (%a)", tick_time);
+	static char date_buffer[8];
+	static char date_placeholder[9] = "/%d/%m/";
+	date_placeholder[0] = RANDOM_SYMBOL();
+	date_placeholder[3] = RANDOM_SYMBOL();
+	date_placeholder[6] = RANDOM_SYMBOL();
+	
+	strftime(date_buffer, sizeof(date_buffer), date_placeholder, tick_time);
 
 	// display it
 	text_layer_set_text(time_layer, time_buffer);
