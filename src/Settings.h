@@ -31,9 +31,7 @@ const uint32_t SMALL_FONTS[] = {
 #define DATE_FONT RESOURCE_ID_FONT_UBUNTU_MONO_20
 #define DATE_BOUNDS GRect(0, 120, 144, 30)
 
-#define BATTERY_BOUNDS GRect(14, 35, 115, 5)
+#define BATTERY_BOUNDS GRect(14, 50, 115, 5)
 #define BATTERY_CORNERS GCornerNone
-#define BATTERY_COLOR GColorGreen
-#define BATTERY_BACKGROUND_COLOR GColorBlack
 
 #endif

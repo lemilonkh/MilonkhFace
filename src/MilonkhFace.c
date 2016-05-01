@@ -5,7 +5,6 @@
 static Window *main_window;
 static TextLayer *time_layer, *date_layer, *header_layer;
 static Layer *battery_layer;
-static GFont time_font, date_font;
 static BitmapLayer *background_layer;
 static GBitmap *background_bitmap;
 
@@ -68,15 +67,14 @@ static void update_colors() {
 }
 
 static GColor random_color(bool light) {
-	int color[3];
+	int color[3] = {0,0,0};
 	
 	if(light) {
 		color[0] = random_hex_val();
 		color[1] = random_hex_val();
 		color[2] = random_hex_val();
 	} else {
-		//bool veryDark = rand()%2 == 0;
-		bool veryDark = true;
+		bool veryDark = rand()%2 == 0;
 		
 		if(veryDark) {
 			int index = rand()%3;
@@ -164,8 +162,6 @@ static void load_main_window(Window *window) {
 	GRect bounds = layer_get_bounds(window_layer);
 
 	// get fonts
-	//static const uint32_t font_ids_big = BIG_FONTS;
-	//static const uint32_t font_ids_small = SMALL_FONTS;
 	for(int f = 0; f < FONT_COUNT; f++) {
 		big_fonts[f] = fonts_load_custom_font(resource_get_handle(BIG_FONTS[f]));
 		small_fonts[f] = fonts_load_custom_font(resource_get_handle(SMALL_FONTS[f]));
