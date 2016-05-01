@@ -12,8 +12,50 @@
     "resources": {
         "media": [
             {
-                "file": "fonts/UbuntuMono.ttf",
-                "name": "FONT_UBUNTU_MONO_20",
+                "file": "fonts/UnifrakturMaguntia.ttf",
+                "name": "FONT_UNIFRAKTUR_MAGUNTIA_24",
+                "targetPlatforms": null,
+                "type": "font"
+            },
+            {
+                "file": "fonts/UnifrakturMaguntia.ttf",
+                "name": "FONT_UNIFRAKTUR_MAGUNTIA_48",
+                "targetPlatforms": null,
+                "type": "font"
+            },
+            {
+                "file": "fonts/CaesarDressing.ttf",
+                "name": "FONT_CAESAR_DRESSING_24",
+                "targetPlatforms": null,
+                "type": "font"
+            },
+            {
+                "file": "fonts/CaesarDressing.ttf",
+                "name": "FONT_CAESAR_DRESSING_48",
+                "targetPlatforms": null,
+                "type": "font"
+            },
+            {
+                "file": "fonts/SpecialElite.ttf",
+                "name": "FONT_SPECIAL_ELITE_24",
+                "targetPlatforms": null,
+                "type": "font"
+            },
+            {
+                "file": "fonts/SpecialElite.ttf",
+                "name": "FONT_SPECIAL_ELITE_48",
+                "targetPlatforms": null,
+                "type": "font"
+            },
+            {
+                "file": "fonts/Audiowide.ttf",
+                "name": "FONT_AUDIOWIDE_24",
+                "targetPlatforms": null,
+                "type": "font"
+            },
+            {
+                "file": "fonts/Audiowide.ttf",
+                "name": "FONT_AUDIOWIDE_48",
                 "targetPlatforms": null,
                 "type": "font"
             },
@@ -24,10 +66,10 @@
                 "type": "font"
             },
             {
-                "file": "images/background.png",
-                "name": "IMAGE_BACKGROUND",
+                "file": "fonts/UbuntuMono.ttf",
+                "name": "FONT_UBUNTU_MONO_24",
                 "targetPlatforms": null,
-                "type": "bitmap"
+                "type": "font"
             }
         ]
     },

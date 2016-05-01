@@ -1,7 +1,6 @@
 #include <pebble.h>
 #include "MilonkhFace.h"
 #include "Settings.h"
-#include "Colors.h"
 
 static Window *main_window;
 static TextLayer *time_layer, *date_layer, *header_layer;
@@ -12,6 +11,10 @@ static GBitmap *background_bitmap;
 
 static int battery_level = 0;
 static GColor battery_background_color, battery_color;
+
+static int current_font = -1;
+static GFont big_fonts[FONT_COUNT];
+static GFont small_fonts[FONT_COUNT];
 
 static char symbols[] = {',','_',':','-','*','/','$','~',';','#','+','^','?','=','!'};
 #define RANDOM_SYMBOL() (symbols[rand() % ARRAY_LENGTH(symbols)])
@@ -43,11 +46,6 @@ static void finish() {
 }
 
 static void update_colors() {
-	/*int color_set = rand() % ARRAY_LENGTH(colors);
-	GColor background_color = GColorFromHEX(colors[color_set].background);
-	GColor text_color = GColorFromHEX(colors[color_set].text);
-	GColor detail_color = GColorFromHEX(colors[color_set].detail);*/
-	
 	bool lightOnDark = rand()%2 == 0;
 	
 	GColor background_color = random_color(!lightOnDark);
@@ -102,6 +100,7 @@ static int random_hex_val() {
 
 static void update_time() {
 	update_colors();
+	update_fonts();
 	
 	// get the time
 	time_t temp = time(NULL);
@@ -111,9 +110,9 @@ static void update_time() {
 	static char time_buffer[8];
 	static char* time_placeholder;
 	if(clock_is_24h_style())
-		time_placeholder = "%H,%M";
+		time_placeholder = "%H:%M";
 	else
-		time_placeholder = "%I,%M";
+		time_placeholder = "%I:%M";
 	
 	// get random symbol
 	char symbol = RANDOM_SYMBOL();
@@ -150,43 +149,44 @@ static void update_battery(Layer *layer, GContext *ctx) {
 	graphics_fill_rect(ctx, GRect(0, 0, width, bounds.size.h), 0, BATTERY_CORNERS);
 }
 
+static void update_fonts() {
+	if(++current_font >= FONT_COUNT)
+		current_font = 0;
+	
+	text_layer_set_font(header_layer, small_fonts[current_font]);
+	text_layer_set_font(time_layer, big_fonts[current_font]);
+	text_layer_set_font(date_layer, small_fonts[current_font]);
+}
+
 static void load_main_window(Window *window) {
 	// window information
 	Layer *window_layer = window_get_root_layer(window);
 	GRect bounds = layer_get_bounds(window_layer);
 
-	// create and draw background
-	/*background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND);
-	background_layer = bitmap_layer_create(bounds);
-	bitmap_layer_set_bitmap(background_layer, background_bitmap);
-	layer_add_child(window_layer, bitmap_layer_get_layer(background_layer));*/
-
 	// get fonts
-	time_font = fonts_load_custom_font(resource_get_handle(TIME_FONT));
-	date_font = fonts_load_custom_font(resource_get_handle(DATE_FONT));
+	//static const uint32_t font_ids_big = BIG_FONTS;
+	//static const uint32_t font_ids_small = SMALL_FONTS;
+	for(int f = 0; f < FONT_COUNT; f++) {
+		big_fonts[f] = fonts_load_custom_font(resource_get_handle(BIG_FONTS[f]));
+		small_fonts[f] = fonts_load_custom_font(resource_get_handle(SMALL_FONTS[f]));
+	}
 	
 	// create and layout header layer
 	header_layer = text_layer_create(HEADER_BOUNDS);
-	text_layer_set_text_color(header_layer, TEXT_COLOR);
 	text_layer_set_background_color(header_layer, GColorClear);
 	text_layer_set_text(header_layer, HEADER_TEXT);
-	text_layer_set_font(header_layer, date_font); // TODO different font?
 	text_layer_set_text_alignment(header_layer, GTextAlignmentCenter); 
 	
 	// create and layout time layer
 	time_layer = text_layer_create(
 		GRect(TIME_X, PBL_IF_ROUND_ELSE(TIME_Y_ROUND, TIME_Y_NORMAL), bounds.size.w, TIME_HEIGHT));
 	text_layer_set_background_color(time_layer, GColorClear);
-	text_layer_set_text_color(time_layer, TEXT_COLOR);
-	text_layer_set_text(time_layer, "13//37");
-	text_layer_set_font(time_layer, time_font);
+	text_layer_set_text(time_layer, "13/37");
 	text_layer_set_text_alignment(time_layer, GTextAlignmentCenter);
 	
 	// create and layout date layer
 	date_layer = text_layer_create(DATE_BOUNDS);
-	text_layer_set_text_color(date_layer, TEXT_COLOR);
 	text_layer_set_background_color(date_layer, GColorClear);
-	text_layer_set_font(date_layer, date_font);
 	text_layer_set_text_alignment(date_layer, GTextAlignmentCenter);
 	
 	// create and layout battery layer
@@ -194,8 +194,9 @@ static void load_main_window(Window *window) {
 	layer_set_update_proc(battery_layer, update_battery);
 	//battery_callback(battery_state_service_peek());
 	
-	// random colors for everybody
+	// random colors and fonts for everybody
 	update_colors();
+	update_fonts();
 	
 	// add date, time and battery layers to window's root layer
 	layer_add_child(window_layer, text_layer_get_layer(header_layer));
@@ -218,7 +219,6 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 static void battery_callback(BatteryChargeState state) {
-	// update battery meter
 	battery_level = state.charge_percent;
 	layer_mark_dirty(battery_layer);
 }
