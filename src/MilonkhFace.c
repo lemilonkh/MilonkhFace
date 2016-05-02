@@ -15,7 +15,7 @@ static int current_font = -1;
 static GFont big_fonts[FONT_COUNT];
 static GFont small_fonts[FONT_COUNT];
 
-static char symbols[] = {',','_',':','-','*','/','$','~',';','#','+','^','?','=','!'};
+static char symbols[] = {',','_',':','-','*','/','$','~',';','+','^','?','=','!'};
 #define RANDOM_SYMBOL() (symbols[rand() % ARRAY_LENGTH(symbols)])
 
 static void init() {
@@ -70,29 +70,22 @@ static GColor random_color(bool light) {
 	int color[3] = {0,0,0};
 	
 	if(light) {
-		color[0] = random_hex_val();
-		color[1] = random_hex_val();
-		color[2] = random_hex_val();
+		color[0] = random_hex_val(1,3);
+		color[1] = random_hex_val(1,3);
+		color[2] = random_hex_val(1,3);
 	} else {
-		bool veryDark = rand()%2 == 0;
-		
-		if(veryDark) {
-			int index = rand()%3;
-			color[index] = random_hex_val();
-		} else {
-			int index1 = rand()%3;
-			int index2 = rand()%3;
-			color[index1] = random_hex_val();
-			color[index2] = random_hex_val();
-		}
+		int index1 = rand()%3;
+		int index2 = rand()%3;
+		color[index1] = random_hex_val(0,1);
+		color[index2] = random_hex_val(0,1);
 	}
 	
 	return GColorFromRGB(color[0], color[1], color[2]);
 }
 
-// generates one of the following values: 0x55, 0xAA, 0xFF
-static int random_hex_val() {
-	int val = ((rand() % 3)+1) * 5;
+// generates one of the following values: 0x00, 0x55, 0xAA, 0xFF
+static int random_hex_val(int min, int max) {
+	int val = ((rand() % (max-1))+min) * 5;
 	return 16*val + val;
 }
 
@@ -207,7 +200,11 @@ static void unload_main_window(Window* window) {
 	text_layer_destroy(time_layer);
 	text_layer_destroy(date_layer);
 	layer_destroy(battery_layer);
-	fonts_unload_custom_font(time_font);
+	
+	for(int f = 0; f < FONT_COUNT; f++) {
+		fonts_unload_custom_font(big_fonts[f]);
+		fonts_unload_custom_font(small_fonts[f]);
+	}
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {

@@ -10,7 +10,7 @@ static void update_battery(Layer *layer, GContext *ctx);
 static void update_colors();
 static void update_fonts();
 static GColor random_color(bool light);
-static int random_hex_val();
+static int random_hex_val(int min, int max);
 static void load_main_window();
 static void unload_main_window();
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed);
