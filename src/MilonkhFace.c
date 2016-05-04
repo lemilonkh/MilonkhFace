@@ -49,7 +49,13 @@ static void update_colors() {
 	
 	GColor background_color = random_color(!lightOnDark);
 	GColor text_color = random_color(lightOnDark);
+	
 	GColor detail_color = random_color(lightOnDark);
+	
+	// make sure the both foreground colors aren't the same
+	while(gcolor_equal(text_color, detail_color)) {
+		detail_color = random_color(lightOnDark);
+	}
 	
 	// update main and time layer background color
 	window_set_background_color(main_window, background_color);
