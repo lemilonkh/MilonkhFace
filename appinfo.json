@@ -49,13 +49,13 @@
             },
             {
                 "file": "fonts/Audiowide.ttf",
-                "name": "FONT_AUDIOWIDE_40",
+                "name": "FONT_AUDIOWIDE_20",
                 "targetPlatforms": null,
                 "type": "font"
             },
             {
                 "file": "fonts/Audiowide.ttf",
-                "name": "FONT_AUDIOWIDE_20",
+                "name": "FONT_AUDIOWIDE_35",
                 "targetPlatforms": null,
                 "type": "font"
             },

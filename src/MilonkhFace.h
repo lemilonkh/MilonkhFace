@@ -3,13 +3,21 @@
 
 #include <pebble.h>
 
+typedef struct color_triplet {
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+} color;
+
 static void init();
 static void finish();
 static void update_time();
 static void update_battery(Layer *layer, GContext *ctx);
 static void update_colors();
 static void update_fonts();
-static GColor random_color(bool light);
+static GColor make_GColor(color col);
+static color sub_max_colors(color a, color b);
+static color random_color(bool light);
 static int random_hex_val(int min, int max);
 static void load_main_window();
 static void unload_main_window();

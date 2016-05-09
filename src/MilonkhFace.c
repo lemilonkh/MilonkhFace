@@ -47,16 +47,26 @@ static void finish() {
 static void update_colors() {
 	bool lightOnDark = rand()%2 == 0;
 	
-	GColor background_color = random_color(!lightOnDark);
-	GColor text_color = random_color(lightOnDark);
+	color bg = random_color(!lightOnDark);
+	color text = random_color(lightOnDark);
 	
-	GColor detail_color = random_color(lightOnDark);
+	GColor background_color, text_color;
 	
-	// make sure the both foreground colors aren't the same
-	while(gcolor_equal(text_color, detail_color)) {
-		detail_color = random_color(lightOnDark);
+	// make sure text is readable
+	if(lightOnDark) {
+		background_color = make_GColor(sub_max_colors(bg, text));
+		text_color = make_GColor(text);
+	} else {
+		text_color = make_GColor(sub_max_colors(text, bg));
+		background_color = make_GColor(bg);
 	}
 	
+	// make sure the both foreground colors aren't the same
+	GColor detail_color;
+	do {
+		detail_color = make_GColor(random_color(lightOnDark));
+	} while(gcolor_equal(text_color, detail_color));
+								   
 	// update main and time layer background color
 	window_set_background_color(main_window, background_color);
 	//text_layer_set_background_color(time_layer, time_background_color);
@@ -72,21 +82,49 @@ static void update_colors() {
 	battery_callback(battery_state_service_peek());
 }
 
-static GColor random_color(bool light) {
-	int color[3] = {0,0,0};
-	
-	if(light) {
-		color[0] = random_hex_val(1,3);
-		color[1] = random_hex_val(1,3);
-		color[2] = random_hex_val(1,3);
-	} else {
-		int index1 = rand()%3;
-		int index2 = rand()%3;
-		color[index1] = random_hex_val(0,1);
-		color[index2] = random_hex_val(0,1);
+static GColor make_GColor(color col) {
+	return GColorFromRGB(col.r, col.g, col.b);
+}
+
+static color sub_max_colors(color x, color y) {
+	// subtract maximal color component of y from x
+	if(y.r >= y.g && y.r >= y.g) {
+		x.r -= y.r;
+	} else if(y.g >= y.r && y.g >= y.b) {
+		x.g -= y.g;
+	} else if(y.b >= y.r && y.b >= y.g) {
+		x.b -= y.b;
 	}
 	
-	return GColorFromRGB(color[0], color[1], color[2]);
+	// don't let color values get negative
+	color result = {
+		x.r > 0 ? x.r : 0,
+		x.g > 0 ? x.g : 0,
+		x.b > 0 ? x.b : 0
+	};
+	
+	return result;
+}
+
+static color random_color(bool light) {
+	int color_vals[3] = {0,0,0};
+	int min = 0, max = 3;
+	
+	if(light) {
+		min = 2;
+		max = 3;
+	} else {
+		min = 0;
+		max = 1;
+	}
+	
+	int index1 = rand()%3;
+	int index2 = rand()%3;
+	color_vals[index1] = random_hex_val(min, max);
+	color_vals[index2] = random_hex_val(min, max);
+	
+	color rand_col = {color_vals[0], color_vals[1], color_vals[2]};
+	return rand_col;
 }
 
 // generates one of the following values: 0x00, 0x55, 0xAA, 0xFF
