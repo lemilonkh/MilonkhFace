@@ -15,7 +15,7 @@ static int current_font = -1;
 static GFont big_fonts[FONT_COUNT];
 static GFont small_fonts[FONT_COUNT];
 
-static char symbols[] = {',','_',':','-','*','/','$','~',';','+','^','?','=','!'};
+static char symbols[] = {',','_',':','#','*','/','$','~',';','+','^','?','=','!'};
 #define RANDOM_SYMBOL() (symbols[rand() % ARRAY_LENGTH(symbols)])
 
 static void init() {
@@ -54,10 +54,10 @@ static void update_colors() {
 	
 	// make sure text is readable
 	if(lightOnDark) {
-		background_color = make_GColor(sub_max_colors(bg, text));
+		background_color = make_GColor(mute_max_color(bg, text));
 		text_color = make_GColor(text);
 	} else {
-		text_color = make_GColor(sub_max_colors(text, bg));
+		text_color = make_GColor(mute_max_color(text, bg));
 		background_color = make_GColor(bg);
 	}
 	
@@ -65,7 +65,7 @@ static void update_colors() {
 	GColor detail_color;
 	do {
 		detail_color = make_GColor(random_color(lightOnDark));
-	} while(gcolor_equal(text_color, detail_color));
+	} while(gcolor_equal(text_color, detail_color) || gcolor_equal(background_color, detail_color));
 								   
 	// update main and time layer background color
 	window_set_background_color(main_window, background_color);
@@ -86,22 +86,17 @@ static GColor make_GColor(color col) {
 	return GColorFromRGB(col.r, col.g, col.b);
 }
 
-static color sub_max_colors(color x, color y) {
+static color mute_max_color(color x, color y) {
+	color result = x;
+	
 	// subtract maximal color component of y from x
 	if(y.r >= y.g && y.r >= y.g) {
-		x.r -= y.r;
+		result.r = 0;
 	} else if(y.g >= y.r && y.g >= y.b) {
-		x.g -= y.g;
+		result.g = 0;
 	} else if(y.b >= y.r && y.b >= y.g) {
-		x.b -= y.b;
+		result.b = 0;
 	}
-	
-	// don't let color values get negative
-	color result = {
-		x.r > 0 ? x.r : 0,
-		x.g > 0 ? x.g : 0,
-		x.b > 0 ? x.b : 0
-	};
 	
 	return result;
 }
